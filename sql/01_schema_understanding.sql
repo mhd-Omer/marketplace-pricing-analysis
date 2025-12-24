@@ -1,3 +1,7 @@
+-- File: 01_schema_understanding.sql
+-- Purpose: Initial schema understanding and data quality checks
+-- Dataset: NYC Airbnb listings
+
 -- 1. Row count
 SELECT COUNT(*) AS total_rows
 FROM listings_nyc;
