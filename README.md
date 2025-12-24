@@ -3,13 +3,13 @@
 ## Overview
 This project analyzes **pricing behavior and user engagement patterns across multiple Airbnb markets** using **SQL (PostgreSQL)** and **Python (for data preparation only)**. The objective is to derive **marketplace-level insights** that generalize across cities and are transferable to large-scale platforms such as real estate portals, rental marketplaces, and e-commerce ecosystems.
 
-The analysis is designed to be **scalable**: each city follows the same analytical framework, enabling meaningful cross-city comparison once multiple markets are added.
+The analysis is intentionally designed to be **scalable and repeatable**. Each city follows the same analytical framework, enabling consistent city-level insights as well as meaningful cross-city comparisons.
 
 The core business questions addressed are:
 1. How are listings priced, and how skewed are pricing distributions across cities?
 2. Does higher price translate to higher user engagement (reviews)?
 3. How do new listings behave compared to established ones within each market?
-4. Which price segments generate the highest engagement?
+4. Which price segments generate the strongest engagement signals?
 
 ---
 
@@ -17,35 +17,38 @@ The core business questions addressed are:
 - **Source:** Inside Airbnb (official public dataset)
 - **Markets analyzed:**
   - New York City (completed)
-  - London (planned)
+  - London (completed)
   - Paris (planned)
   - Singapore (planned)
 
-### New York City Snapshot
-- **Number of listings:** 36,111
-
-Raw CSV data is lightly cleaned using Python for schema alignment and database compatibility. All analytical logic and insights are derived using PostgreSQL.
+All prices are analyzed in **local currency**. Cross-city comparisons rely on **relative measures** (medians, percentiles, price bands) rather than absolute currency values.
 
 ---
 
 ## Data Preparation & Quality Checks (Common Across Cities)
-Before analysis, each city dataset undergoes consistent validation steps:
+Before analysis, each city dataset undergoes consistent validation and preparation steps:
 - Verification of successful data load and row counts
 - Confirmation of numeric integrity for pricing fields
 - Identification of expected NULL values (e.g., price, reviews_per_month)
 - Validation of critical categorical fields such as room_type
 
-Missing values are intentionally retained as NULLs to preserve data integrity and avoid bias.
+Missing values are intentionally retained as NULLs to preserve data integrity and avoid analytical bias.
 
 ---
 
 ## City-Level Analysis: New York City
 
-### Pricing Distribution
-- **Average price:** $680.53
-- **Median price:** $154.00
+### Market Snapshot
+- **Total listings:** 36,111
+- Market structure includes a mix of entire homes, private rooms, and hotel inventory
 
-Pricing in NYC is heavily right-skewed due to a small number of extremely high-priced listings. Median price is therefore a more representative measure of typical market pricing.
+---
+
+### Pricing Distribution
+- **Average price:** $680.53  
+- **Median price:** $154.00  
+
+NYC pricing is **heavily right-skewed**, driven by a small number of extremely high-priced listings. Median price is therefore a far more reliable representation of a typical listing.
 
 ---
 
@@ -54,7 +57,7 @@ Pricing in NYC is heavily right-skewed due to a small number of extremely high-p
 - 50% (median) priced at or below **$154**
 - 75% priced at or below **$279**
 
-This indicates that the majority of NYC listings fall within a $90–$280 range, with rapid price escalation beyond the upper quartile.
+The majority of demand is concentrated between $90 and $280, with rapid price escalation beyond the upper quartile.
 
 ---
 
@@ -63,7 +66,7 @@ This indicates that the majority of NYC listings fall within a $90–$280 range,
 - Maximum observed price exceeds **$50,000**
 - Predominantly hotel rooms and select private listings in central locations
 
-These outliers represent niche or non-typical inventory and are analyzed separately to prevent skewed market conclusions.
+These listings represent niche or non-typical inventory and materially distort mean-based metrics.
 
 ---
 
@@ -73,14 +76,14 @@ Listings were segmented using percentile-based price bands:
 - **Mid-range:** 7,082 listings
 - **Premium:** 7,175 listings
 
-The near-uniform distribution suggests a highly competitive and balanced marketplace.
+The near-uniform distribution suggests a highly competitive and well-supplied marketplace.
 
 ---
 
 ### Room Type vs Price Band (NYC)
 - **Budget:** Dominated by private rooms
 - **Mid-range:** Primarily entire homes/apartments
-- **Premium:** Dominated by entire homes, with hotel rooms competing almost exclusively in this segment
+- **Premium:** Dominated by entire homes, with hotel rooms competing almost exclusively in this tier
 
 As prices increase, demand shifts toward listings offering greater privacy and exclusivity.
 
@@ -89,59 +92,125 @@ As prices increase, demand shifts toward listings offering greater privacy and e
 ## Engagement Analysis: New York City
 
 ### Engagement vs Price
-Engagement follows an inverted-U relationship with price:
-- Highest engagement in the **$100–199** and **$200–399** ranges
-- Reduced engagement at both low-price (crowded) and high-price (niche) extremes
+Engagement in NYC follows an **inverted-U relationship** with price:
+- Highest engagement occurs in the **mid-range price segment**
+- Engagement declines at both low-price (high competition) and high-price (niche demand) extremes
 
-Higher price does **not** directly correlate with higher engagement.
-
----
-
-### Median Engagement Confirms Demand Concentration
-Median review counts decline steadily as prices rise. Listings priced above $1000 typically exhibit zero median engagement, indicating limited demand volume in premium segments.
+Higher prices do **not** directly translate into higher engagement.
 
 ---
 
-### New vs Established Listings (NYC)
+### Listing Maturity
 - **New listings:** 20,369
 - **Established listings:** 15,742
 
-A large proportion of listings are early-stage, reflecting continuous supply churn and high competition within the NYC market.
-
----
-
-### Pricing Behavior by Listing Maturity
-- Median prices are similar between new and established listings
-- New listings exhibit significantly higher price volatility due to extreme outliers
-
-This suggests comparable baseline pricing strategies with divergent risk profiles.
+NYC shows higher listing churn, with many listings still in early stages of establishing demand.
 
 ---
 
 ### Engagement by Price Band
 - **Mid-range listings:** Highest average and median engagement
-- **Budget listings:** High competition, diluted engagement
-- **Premium listings:** Lower engagement despite higher prices
+- **Budget listings:** Competitive but engagement is diluted
+- **Premium listings:** Lowest engagement despite higher prices
 
-Mid-range offerings achieve the strongest balance between price and demand.
+Mid-range listings achieve the strongest balance between price and demand.
 
 ---
 
-## Cross-City Extension (In Progress)
-The NYC analysis serves as the baseline framework. The same SQL logic will be applied to additional cities to:
-- Compare pricing distributions and skewness
-- Identify city-specific engagement sweet spots
-- Assess how market maturity and affordability differ by region
+## City-Level Analysis: London
+
+### Market Snapshot
+- **Total listings:** 96,871
+- Market dominated by **entire home/apartment listings**, indicating a more professionalized hosting ecosystem
+
+---
+
+### Pricing Distribution
+- **Average price:** £229.92  
+- **Median price:** £135.00  
+
+London pricing is moderately right-skewed but far more stable than NYC. Median price remains the most reliable indicator of typical listing cost.
+
+---
+
+### Core Market Price Range
+- 25% of listings priced at or below **£77**
+- 50% (median) priced at or below **£135**
+- 75% priced at or below **£221**
+
+Most London listings cluster tightly within this range, indicating strong price discipline.
+
+---
+
+### Extreme Pricing Outliers
+- **32 listings** priced above **£10,000**
+- Maximum observed price exceeds **£1,000,000**
+- These listings show negligible engagement and likely represent placeholder or non-transactional inventory
+
+---
+
+### Price Band Segmentation (London)
+- **Budget:** 20,453 listings
+- **Mid-range:** 20,442 listings
+- **Premium:** 21,068 listings
+
+Supply is evenly distributed across segments, reflecting a balanced marketplace.
+
+---
+
+### Room Type vs Price Band (London)
+- **Budget:** Predominantly private rooms
+- **Mid-range:** Largely entire homes/apartments
+- **Premium:** Almost exclusively entire homes, with minimal hotel presence
+
+As prices rise, London listings overwhelmingly shift toward full-unit accommodations.
+
+---
+
+## Engagement Analysis: London
+
+### Engagement vs Price
+Unlike NYC, engagement in London **decreases monotonically as prices increase**:
+- **Budget listings** receive the highest engagement
+- Engagement steadily declines across mid-range and premium tiers
+
+This indicates strong **price sensitivity** and affordability-driven demand.
+
+---
+
+### Listing Maturity
+- **New listings:** 50,794
+- **Established listings:** 46,077
+
+London exhibits a near-even split between new and established listings, suggesting a mature and stable marketplace.
+
+---
+
+### Engagement by Price Band
+- **Budget listings:** Highest engagement
+- **Mid-range listings:** Moderate engagement
+- **Premium listings:** Lowest engagement
+
+Lower-priced listings consistently generate the strongest demand signals.
+
+---
+
+## Cross-City Comparison: New York City vs London
+
+- **NYC** exhibits higher price volatility and a mid-range engagement peak
+- **London** shows tighter price clustering and stronger price sensitivity
+- Extreme outliers are far more prevalent and impactful in NYC
+- London’s market structure is more professionalized and stable
+
+**Summary insight:** NYC behaves as a value-segmented, experience-driven marketplace, while London behaves as a price-sensitive, affordability-driven marketplace.
 
 ---
 
 ## Business-Level Takeaways
 - Median-based metrics are essential for skewed marketplace data
-- Extreme pricing outliers should be contextualized, not blindly removed
 - Higher price does not guarantee higher engagement
-- Mid-range price segments consistently drive the strongest demand signals
-
-These insights are broadly applicable to two-sided marketplaces such as real estate platforms, rental services, and e-commerce portals.
+- Pricing strategies must adapt to local market dynamics
+- Relative measures enable meaningful cross-city comparisons
 
 ---
 
